@@ -6,7 +6,7 @@ dmpcd is a python package meant for executing the discrete Morse graph reconstru
   * [System Requirements](#system-requirements)
   * [Required Python Libraries](#required-python-libraries)
   * [Compiling Code](#compiling-code)
-* [DiMo3D Functions](#dimo3d-functions)
+* [dmpcd Functions](#dmpcd-functions)
 * [Separate Programs](#separate-programs)
 * [Example Use of Pipeline](#example-use-of-pipeline) 
 
@@ -31,6 +31,8 @@ Lower Star Filtration Persistence Module
     > g++ DiMoSC.cpp -I./phat/include -std=c++11 -o spt_cpp
     
 Discrete Morse Graph Reconstruction
+
+## dmpcd Functions
 
 ### dmpcd.build_sparse_weighted_rips_filtration(feature_filename, output_dir, k=15, metric='euclidean', epsilon=.99, cutoff=inf)
 
