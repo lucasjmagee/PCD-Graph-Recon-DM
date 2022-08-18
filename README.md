@@ -22,7 +22,7 @@ dmpcd is a python package meant for executing the discrete Morse graph reconstru
 
 Sparse Weighted Rips Filtration Persistence Module
     
-    > cd DiMo3d/code/graph_recon_RIPS_v2/spt_cpp/
+    > cd DiMo3d/code/persistence_swr/
     > g++ DiMoSC.cpp -I./phat/include -std=c++11 -o spt_cpp
 
 Lower Star Filtration Persistence Module
