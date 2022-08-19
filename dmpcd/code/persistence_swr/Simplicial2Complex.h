@@ -354,7 +354,8 @@ void Simplicial2Complex::build_spt3(float sigma, string efile){
             int v0 = e_vert[0];
             int v1 = e_vert[1];
 
-        edgefile << v0 << " " << v1 << " 0 "  << pp->persistence << " " << cri_e->funcValue << endl;
+        //edgefile << v0 << " " << v1 << " 0 "  << pp->persistence << " " << cri_e->funcValue << endl;
+        edgefile << v0 << " " << v1 << " 0 "  << pp->persistence << endl;
 
     }
 
@@ -368,7 +369,8 @@ void Simplicial2Complex::build_spt3(float sigma, string efile){
         int v0 = e_vert[0];
         int v1 = e_vert[1];
 
-        edgefile << v0 << " " << v1 << " 1 "  << pp->persistence << " " << cri_e->funcValue << endl;
+        //edgefile << v0 << " " << v1 << " 1 "  << pp->persistence << " " << cri_e->funcValue << endl;
+        edgefile << v0 << " " << v1 << " 1 "  << pp->persistence << endl;
     }
 
     unpaired.clear();

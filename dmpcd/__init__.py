@@ -3,6 +3,8 @@ import numpy as np
 from math import inf
 from sklearn.metrics.pairwise import pairwise_distances
 import os
+import csv
+import matplotlib.pyplot as plt
 
 
 def __choose_first_in_perm(distance_matrix):
@@ -73,6 +75,9 @@ def __sorted_insert(sorted_list, element):
 
 
 def build_sparse_weighted_rips_filtration(feature_filename, output_dir, k=15, metric='euclidean', epsilon=.99, cutoff=inf):
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
     with open(feature_filename, 'r') as feature_file:
         content = feature_file.readlines()
         feature_file.close()
@@ -563,8 +568,134 @@ def build_sparse_weighted_rips_filtration(feature_filename, output_dir, k=15, me
         output_file.close()
 
 
-def compute_persistence(input_filename, output_dir):
+def reorder_weights(input_filename, output_filename):
+    weights = []
+    with open(input_filename, 'r') as input_file:
+        reader = csv.reader(input_file, delimiter=' ')
+        for row in reader:
+            weights.append(float(row[0]))
+        input_file.close()
+    weights.sort()
+    with open(output_filename, 'w') as output_file:
+        for w in weights:
+            output_file.write(str(w) + '\n')
+        output_file.close()
+
+
+def compute_persistence_swr(input_filename, output_dir):
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
-    command =     
+    command = "./dmpcd/code/persistence_swr/spt_cpp " + input_filename + ' ' + output_dir + ' 0 1'
+    os.system(command)
 
+
+def reorder_verts_by_weight(weights_filename, verts_filename, output_filename):
+    weights = []
+    with open(weights_filename, 'r') as input_file:
+        reader = csv.reader(input_file, delimiter=' ')
+        for row in reader:
+            weights.append(float(row[0]))
+        input_file.close()
+
+    with open(verts_filename, 'r') as input_file:
+        content = input_file.readlines()
+        input_file.close()
+    cells = content
+    pairs = [(weights[i], cells[i]) for i in range(len(cells))]
+    pairs.sort()
+
+    with open(output_filename, 'w') as output_file:
+        for p in pairs:
+            output_file.write(p[1])
+        output_file.close()
+
+
+def reorder_verts_and_annos_by_weight(weights_filename, verts_filename, anno_filename, output_vert_filename, output_anno_filename):
+    weights = []
+    with open(weights_filename, 'r') as input_file:
+        reader = csv.reader(input_file, delimiter=' ')
+        for row in reader:
+            weights.append(float(row[0]))
+        input_file.close()
+
+    with open(verts_filename, 'r') as input_file:
+        content = input_file.readlines()
+        input_file.close()
+    cells = content
+
+    annos = []
+    with open(anno_filename, 'r') as input_anno:
+        reader = csv.reader(input_anno, delimiter=' ')
+        for row in reader:
+            annos.append(row[0])
+        input_anno.close()
+
+    pairs = [(weights[i], cells[i], annos[i]) for i in range(len(cells))]
+    pairs.sort()
+
+    with open(output_vert_filename, 'w') as output_file:
+        for p in pairs:
+            output_file.write(p[1])
+        output_file.close()
+
+    with open(output_anno_filename, 'w') as output_file:
+        for p in pairs:
+            output_file.write(p[2])
+        output_file.close()
+
+
+def compute_graph_reconstruction(sorted_weights_filename, edge_persistence_filename, persistence_threshold, output_dir):
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
+    command = "./dmpcd/code/phat_morse_src/a.out " + sorted_weights_filename + ' ' + edge_persistence_filename + ' ' + str(persistence_threshold) + ' ' + output_dir
+    os.system(command)
+
+
+def visualize_results_2d(vert_filename, edge_filename):
+    x = []
+    y = []
+    # print('reading coords')
+    with open(vert_filename, 'r') as vert_file:
+        reader = csv.reader(vert_file, delimiter=' ')
+        for row in reader:
+            x.append(float(row[0]))
+            y.append(float(row[1]))
+        vert_file.close()
+
+    edges = []
+    edge_freq = {}
+    morse_verts = set()
+    # print('reading morse')
+    with open(edge_filename) as edge_file:
+        reader = csv.reader(edge_file, delimiter=' ')
+        for row in reader:
+            e = (int(row[0]), int(row[1]), -1)
+            if e not in edge_freq:
+                edge_freq[e] = 1
+            else:
+                # print('read all about it')
+                edge_freq[e] += 1
+            edges.append(e)
+            # edges.append((int(row[0]), int(row[1]), int(row[2])))
+            morse_verts.add(int(row[0]))
+            morse_verts.add(int(row[1]))
+        edge_file.close()
+
+    morse_x = [x[i] for i in range(len(x)) if i in morse_verts]
+    morse_y = [y[i] for i in range(len(y)) if i in morse_verts]
+    nm_x = [x[i] for i in range(len(x)) if i not in morse_verts]
+    nm_y = [y[i] for i in range(len(y)) if i not in morse_verts]
+
+    for e in edges:
+        v0 = min(e[0], e[1])
+        v1 = max(e[0], e[1])
+        x_vals = [x[v0], x[v1]]
+        y_vals = [y[v0], y[v1]]
+
+        plt.plot(x_vals, y_vals, c='red')
+
+    plt.scatter(morse_x, morse_y, s=5, c='black')
+    plt.scatter(nm_x, nm_y, s=5, c='black')
+
+    plt.show()
