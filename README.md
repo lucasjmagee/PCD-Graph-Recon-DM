@@ -294,6 +294,45 @@ image of morse graph on top of 2D embedding of the dataset
     
     >dm.visualize_results_2d(sorted_feature_filename, result_edge_filename)
 
+## Separate Programs
+
+### Sparse Weighted Rips Filtration Persistence Module (PCD) (./dmpcd/code/persistence_swr/spt_cpp
+
+#### Description
+
+Compute persistence diagram of sparse weighted Rips filtration
+
+#### Python Function
+
+dmpcd.compute_persistence_swr
+
+#### Input
+- input_filename - path to sparse weighted Rips filtration file
+- output_dir - directory where persistence results will be written to
+
+#### Output:
+
+output_dir/edge_for_morse_only.txt - contains all persistence information needed to run graph reconstruction
+
+### Sparse Weighted Rips Filtration Persistence Module (PCD) (./dmpcd/code/persistence_swr/spt_cpp
+
+#### Description
+
+Compute persistence diagram of sparse weighted Rips filtration
+
+#### Python Function
+
+dmpcd.compute_persistence_swr
+
+#### Input
+- input_filename - path to sparse weighted Rips filtration file
+- output_dir - directory where persistence results will be written to
+
+#### Output:
+
+output_dir/edge_for_morse_only.txt - contains all persistence information needed to run graph reconstruction
+
+
 ## Example Use of Pipeline
 
 ### PCD
