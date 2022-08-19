@@ -294,3 +294,37 @@ image of morse graph on top of 2D embedding of the dataset
     
     >dm.visualize_results_2d(sorted_feature_filename, result_edge_filename)
 
+## Example Use of Pipeline
+
+### PCD
+
+    >import dmpcd as dm
+
+    >input_filename = "data/1-circle/features.txt"
+    >output_dir = "results/1-circle-pcd/"
+    >k = 15
+    >metric = 'euclidean'
+    >epsiilon = .99
+    >persistence_threshold = .25
+
+    >dm.build_sparse_weighted_rips_filtration(input_filename, output_dir, k, metric, epsiilon)
+    >filtration_filename = os.path.join(output_dir, 'sparse_weighted_rips_filtration.txt')
+    >weights_filename = os.path.join(output_dir, 'weights.txt')
+
+    >dm.compute_persistence_swr(filtration_filename, output_dir)
+    >edge_filename = os.path.join(output_dir, "edge_for_morse_only.txt")
+
+    >sorted_weights_filename = os.path.join(output_dir, "sorted-weights.txt")
+    >dm.reorder_weights(weights_filename, sorted_weights_filename)
+
+    >morse_dir = os.path.join(output_dir, str(persistence_threshold) + '/')
+    >dm.compute_graph_reconstruction(sorted_weights_filename, edge_filename, persistence_threshold, morse_dir)
+
+    >result_edge_filename = os.path.join(morse_dir, 'dimo_edge.txt')
+    >sorted_feature_filename = os.path.join(output_dir, 'sorted-feature.txt')
+    >dm.reorder_verts_by_weight(weights_filename, input_filename, sorted_feature_filename)
+    
+    >dm.visualize_results_2d(sorted_feature_filename, result_edge_filename)
+
+### Baseline
+
