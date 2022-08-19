@@ -20,17 +20,24 @@ dmpcd is a python package meant for executing the discrete Morse graph reconstru
 
 ### Compiling Code
 
-Sparse Weighted Rips Filtration Persistence Module
+Sparse Weighted Rips Filtration Persistence Module (PCD)
     
     > cd DiMo3d/code/persistence_swr/
     > g++ DiMoSC.cpp -I./phat/include -std=c++11 -o spt_cpp
 
-Lower Star Filtration Persistence Module
+Lower Star Filtration Persistence Module (baseline)
 
     > cd DiMo3d/code/spt_cpp/
     > g++ DiMoSC.cpp -I./phat/include -std=c++11 -o spt_cpp
     
-Discrete Morse Graph Reconstruction
+Discrete Morse Graph Reconstruction (PCD)
+    > cd DiMo3d/code/phat_morse_src/
+    > g++ ComputeGraphReconstruction.cpp
+    
+Discrete Morse Graph Reconstruction (Baseline)
+    > cd DiMo3d/code/baseline_morse_src/
+    > g++ ComputeGraphReconstruction.cpp
+
 
 ## dmpcd Functions
 
@@ -89,4 +96,201 @@ File containing persistence values and dimension of each edge in input filtratio
     >dm.build_sparse_weighted_rips_filtration(feature_filename, output_dir, k, metric, epsilon, cutoff)
     >dm.compute_persistence_swr(os.path.join(output_dir, "sparse_weighted_rips_filtration.txt"), output_dir)
 
+### dmpcd.reorder_weights(input_filename, output_filename)
+
+#### Description
+order weights in ascending order - this is needed for input into PCD graph reconstruction.
+
+#### Input
+- input_filename - file where weights are written - rows match rows of original input_file for build_sparse_weighted_rips_filtration
+- output_filename - file where sorted weights will be written
+
+#### Output
+
+File containing persistence values and dimension of each edge in input filtration.  This is later used for DM graph reconstruction.
+
+#### Example
+
+    >import dmpcd as dm
+
+    >feature_filename = “data/1-circle/features.txt”
+    >output_dir = “results/1-circle/”
+    >k=15
+    >metric='euclidean'
+    >epsilon=.99
+    >cutoff=inf
+    >dm.build_sparse_weighted_rips_filtration(feature_filename, output_dir, k, metric, epsilon, cutoff)
+    >weights_filename = os.path.join(output_dir, 'weights.txt')
+    >sorted_weights_filename = os.path.join(output_dir, "sorted-weights.txt")
+    >dm.reorder_weights(weights_filename, sorted_weights_filename)
+    
+### dmpcd.compute_graph_reconstruction(sorted_weights_filename, edge_persistence_filename, persistence_threshold, output_dir)
+
+#### Description
+Compute DM graph reconstruction
+
+#### Input
+- sorted_weights_filename - list of vert weights in sorted order
+- edge_persistence_filename - persistence values and type for each edge in domain
+- persistence threshold - threshold value used by algorithm to simplify output
+- output_dir - directory graph (.txt) is written to
+
+#### Output
+
+Graph reconstruction of PCD
+
+#### Example
+
+    >import dmpcd as dm
+
+    >input_filename = "data/1-circle/features.txt"
+    >output_dir = "results/1-circle-pcd/"
+    >k = 15
+    >metric = 'euclidean'
+    >epsiilon = .99
+    >persistence_threshold = .25
+
+    >dm.build_sparse_weighted_rips_filtration(input_filename, output_dir, k, metric, epsiilon)
+    >filtration_filename = os.path.join(output_dir, 'sparse_weighted_rips_filtration.txt')
+    >weights_filename = os.path.join(output_dir, 'weights.txt')
+
+    >dm.compute_persistence_swr(filtration_filename, output_dir)
+    >edge_filename = os.path.join(output_dir, "edge_for_morse_only.txt")
+
+    >sorted_weights_filename = os.path.join(output_dir, "sorted-weights.txt")
+    >dm.reorder_weights(weights_filename, sorted_weights_filename)
+
+    >morse_dir = os.path.join(output_dir, str(persistence_threshold) + '/')
+    >dm.compute_graph_reconstruction(sorted_weights_filename, edge_filename, persistence_threshold, morse_dir)
+
+### dmpcd.reorder_verts_by_weight(weights_filename, verts_filename, output_filename)
+
+#### Description
+reorder original data by weights computed in dmpcd.build_sparse_weighted_rips_filtration
+
+#### Input
+- weights_filename - weight file outputted by dmpcd.build_sparse_weighted_rips_filtration
+- verts_filename - original PCD dataset file for dmpcd.build_sparse_weighted_rips_filtration
+- output_filename - PCD dataset with points listed in ascending weight order
+
+#### Output
+
+reordered PCD dataset based on weight values
+
+#### Example
+
+    >import dmpcd as dm
+
+    >input_filename = "data/1-circle/features.txt"
+    >output_dir = "results/1-circle-pcd/"
+    >k = 15
+    >metric = 'euclidean'
+    >epsiilon = .99
+    >persistence_threshold = .25
+
+    >dm.build_sparse_weighted_rips_filtration(input_filename, output_dir, k, metric, epsiilon)
+    >filtration_filename = os.path.join(output_dir, 'sparse_weighted_rips_filtration.txt')
+    >weights_filename = os.path.join(output_dir, 'weights.txt')
+
+    >dm.compute_persistence_swr(filtration_filename, output_dir)
+    >edge_filename = os.path.join(output_dir, "edge_for_morse_only.txt")
+
+    >sorted_weights_filename = os.path.join(output_dir, "sorted-weights.txt")
+    >dm.reorder_weights(weights_filename, sorted_weights_filename)
+
+    >morse_dir = os.path.join(output_dir, str(persistence_threshold) + '/')
+    >dm.compute_graph_reconstruction(sorted_weights_filename, edge_filename, persistence_threshold, morse_dir)
+
+    >result_edge_filename = os.path.join(morse_dir, 'dimo_edge.txt')
+    >sorted_feature_filename = os.path.join(output_dir, 'sorted-feature.txt')
+    >dm.reorder_verts_by_weight(weights_filename, input_filename, sorted_feature_filename)
+    
+### dmpcd.reorder_verts_and_annos_by_weight(weights_filename, verts_filename, anno_filename, output_vert_filename, output_anno_filename)
+
+#### Description
+reorder original data (and annotations) by weights computed in dmpcd.build_sparse_weighted_rips_filtration
+
+#### Input
+- weights_filename - weight file outputted by dmpcd.build_sparse_weighted_rips_filtration
+- verts_filename - original PCD dataset file for dmpcd.build_sparse_weighted_rips_filtration
+- anno_filename - annotations of individual points in PCD
+- output_vert_filename - PCD dataset with points listed in ascending weight order
+- output_anno_filename - PCD dataset annotations with labels listed in ascending weight order
+
+
+#### Output
+
+reordered PCD dataset based on weight values
+
+#### Example
+
+    >import dmpcd as dm
+
+    >input_filename = "data/1-circle/features.txt"
+    >output_dir = "results/1-circle-pcd/"
+    >k = 15
+    >metric = 'euclidean'
+    >epsiilon = .99
+    >persistence_threshold = .25
+
+    >dm.build_sparse_weighted_rips_filtration(input_filename, output_dir, k, metric, epsiilon)
+    >filtration_filename = os.path.join(output_dir, 'sparse_weighted_rips_filtration.txt')
+    >weights_filename = os.path.join(output_dir, 'weights.txt')
+
+    >dm.compute_persistence_swr(filtration_filename, output_dir)
+    >edge_filename = os.path.join(output_dir, "edge_for_morse_only.txt")
+
+    >sorted_weights_filename = os.path.join(output_dir, "sorted-weights.txt")
+    >dm.reorder_weights(weights_filename, sorted_weights_filename)
+
+    >morse_dir = os.path.join(output_dir, str(persistence_threshold) + '/')
+    >dm.compute_graph_reconstruction(sorted_weights_filename, edge_filename, persistence_threshold, morse_dir)
+
+    >result_edge_filename = os.path.join(morse_dir, 'dimo_edge.txt')
+    >sorted_feature_filename = os.path.join(output_dir, 'sorted-feature.txt')
+    >sorted_anno_filename = os.path.join(output_dir, 'sorted-anno.txt')
+    >dm.reorder_verts_and_annos_by_weight(weights_filename, input_filename, "/path/to/anno.txt", sorted_feature_filename, output_anno_filename)
+
+### dmpcd.visualize_results_2d(vert_filename, edge_filename)
+
+#### Description
+visualize DM graph reconstruction on 2D embedding of points
+
+#### Input
+- vert_filename - verts in PCD (needs to be sorted by weight)
+- edge_filename - edges of DM graph
+
+#### Output
+
+image of morse graph on top of 2D embedding of the dataset
+
+#### Example
+
+    >import dmpcd as dm
+
+    >input_filename = "data/1-circle/features.txt"
+    >output_dir = "results/1-circle-pcd/"
+    >k = 15
+    >metric = 'euclidean'
+    >epsiilon = .99
+    >persistence_threshold = .25
+
+    >dm.build_sparse_weighted_rips_filtration(input_filename, output_dir, k, metric, epsiilon)
+    >filtration_filename = os.path.join(output_dir, 'sparse_weighted_rips_filtration.txt')
+    >weights_filename = os.path.join(output_dir, 'weights.txt')
+
+    >dm.compute_persistence_swr(filtration_filename, output_dir)
+    >edge_filename = os.path.join(output_dir, "edge_for_morse_only.txt")
+
+    >sorted_weights_filename = os.path.join(output_dir, "sorted-weights.txt")
+    >dm.reorder_weights(weights_filename, sorted_weights_filename)
+
+    >morse_dir = os.path.join(output_dir, str(persistence_threshold) + '/')
+    >dm.compute_graph_reconstruction(sorted_weights_filename, edge_filename, persistence_threshold, morse_dir)
+
+    >result_edge_filename = os.path.join(morse_dir, 'dimo_edge.txt')
+    >sorted_feature_filename = os.path.join(output_dir, 'sorted-feature.txt')
+    >dm.reorder_verts_by_weight(weights_filename, input_filename, sorted_feature_filename)
+    
+    >dm.visualize_results_2d(sorted_feature_filename, result_edge_filename)
 
