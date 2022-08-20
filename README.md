@@ -319,7 +319,7 @@ a file containing the density estimation of each point in PCD
     >density_filename = os.path.join(output_dir, 'density.txt', k)
     >dm.density_estimation(input_filename, density_filename)
 
-### compute_rips_complex_edges(input_filename, output_filename, thresh, metric='euclidean')
+### dmpcd.compute_rips_complex_edges(input_filename, output_filename, thresh, metric='euclidean')
 
 #### Description
 compute edges in Rips complex for given threshold
@@ -344,8 +344,131 @@ a file containing the edges in Rips complex
     
     >rips_edge_filename = os.path.join(output_dir, 'rips-edge.txt')
     >dm.compute_rips_complex_edges(input_filename, rips_edge_filename, rips_alpha, metric='euclidean')
+
+### dmpcd.build_baseline_complex(rips_edge_filename, density_filename, output_filename, threshold=inf):
+
+#### Description
+build Rips complex with density values (.bin)
+
+#### Input
+- rips_edge_filename - file containing edges in Rips complex
+- density_filename - file containing density of each point in PCD
+- output filename - Complex (.bin) that can be used as input for persistence computation
+- threshold - Rips cutoff, if rips_edge_filename was generated with cutoff this does not need to be used again
+
+#### Output
+
+a file containing the edges in Rips complex
+
+#### Example
+
+    >import dmpcd as dm
+    
+    >input_filename = "data/1-circle/features.txt"
+    >output_dir = "results/1-circle-baseline/"
+    >k = 15
+    >rips_alpha = .25
+    >persistence_threshold = 998
+
+    >if not os.path.exists(output_dir):
+    >    os.mkdir(output_dir)
+
+    >density_filename = os.path.join(output_dir, 'density.txt')
+    >dm.density_estimation(input_filename, density_filename, k)
+
+    >rips_edge_filename = os.path.join(output_dir, 'rips-edge.txt')
+    >dm.compute_rips_complex_edges(input_filename, rips_edge_filename, rips_alpha, metric='euclidean')
+
+    >complex_filename = os.path.join(output_dir, 'complex.bin')
+    >dm.build_baseline_complex(rips_edge_filename, density_filename, complex_filename)
+
+
+### dmpcd.compute_persistence_baseline(input_filename, output_dir)
+
+#### Description
+build Rips complex with density values (.bin)
+
+#### Input
+- input_filename - file where filtration is written
+- output_dir - where persistence values of edges in filtration are written
+
+#### Output
+
+a file containing the persistence ifno of the edges in domain
+
+#### Example
+
+    >import dmpcd as dm
+    
+    >input_filename = "data/1-circle/features.txt"
+    >output_dir = "results/1-circle-baseline/"
+    >k = 15
+    >rips_alpha = .25
+    >persistence_threshold = 998
+
+    >if not os.path.exists(output_dir):
+    >    os.mkdir(output_dir)
+
+    >density_filename = os.path.join(output_dir, 'density.txt')
+    >dm.density_estimation(input_filename, density_filename, k)
+
+    >rips_edge_filename = os.path.join(output_dir, 'rips-edge.txt')
+    >dm.compute_rips_complex_edges(input_filename, rips_edge_filename, rips_alpha, metric='euclidean')
+
+    >complex_filename = os.path.join(output_dir, 'complex.bin')
+    >dm.build_baseline_complex(rips_edge_filename, density_filename, complex_filename)
+
+    >dm.compute_persistence_baseline(complex_filename, output_dir)
+    >edge_persistence_filename = os.path.join(output_dir, 'edge_for_morse_only.txt')
     
 
+### dmpcd.compute_graph_reconstruction_baseline(density_filename, edge_persistence_filename, persistence_threshold, output_dir)
+
+#### Description
+compute DM graph reconstruction
+
+#### Input
+- density_filename - file containing density of each point in PCD 
+- edge_persistence_filename - file containing persistence values of edges in filtration 
+- persistence_threshold - threshold used by algorithm to simplify output graph
+- output_dir - directory output graph (.txt) is stored
+
+#### Output
+
+a file containing the persistence ifno of the edges in domain
+
+#### Example
+
+    >import dmpcd as dm
+    
+    >input_filename = "data/1-circle/features.txt"
+    >output_dir = "results/1-circle-baseline/"
+    >k = 15
+    >rips_alpha = .25
+    >persistence_threshold = 998
+
+    >if not os.path.exists(output_dir):
+    >    os.mkdir(output_dir)
+
+    >density_filename = os.path.join(output_dir, 'density.txt')
+    >dm.density_estimation(input_filename, density_filename, k)
+
+    >rips_edge_filename = os.path.join(output_dir, 'rips-edge.txt')
+    >dm.compute_rips_complex_edges(input_filename, rips_edge_filename, rips_alpha, metric='euclidean')
+
+    >complex_filename = os.path.join(output_dir, 'complex.bin')
+    >dm.build_baseline_complex(rips_edge_filename, density_filename, complex_filename)
+
+    >dm.compute_persistence_baseline(complex_filename, output_dir)
+    >edge_persistence_filename = os.path.join(output_dir, 'edge_for_morse_only.txt')
+
+    >morse_dir = os.path.join(output_dir, str(persistence_threshold) + '/')
+    >if not os.path.exists(morse_dir):
+    >    os.mkdir(morse_dir)
+    >dm.compute_graph_reconstruction_baseline(density_filename, edge_persistence_filename, persistence_threshold, morse_dir)
+    >morse_edge_filename = os.path.join(morse_dir, 'dimo_edge.txt')
+
+    >dm.visualize_results_2d(input_filename, morse_edge_filename)
 
 ## Separate Programs
 
@@ -353,7 +476,7 @@ a file containing the edges in Rips complex
 
 #### Description
 
-Compute persistence diagram of sparse weighted Rips filtration
+Compute persistence diagram of sparse weighted Rips filtration.  This is a modified version of the code found at (https://github.com/wangjiayuan007/graph_recon_DM).
 
 #### Python Function
 
@@ -367,23 +490,64 @@ dmpcd.compute_persistence_swr
 
 output_dir/edge_for_morse_only.txt - contains all persistence information needed to run graph reconstruction
 
-### Sparse Weighted Rips Filtration Persistence Module (PCD) (./dmpcd/code/persistence_swr/spt_cpp
+### Lower Star Filtration Persistence Module (Baseline) (./dmpcd/code/persistence_baseline/spt_cpp)
 
 #### Description
 
-Compute persistence diagram of sparse weighted Rips filtration
+Compute persistence diagram lower star filtration of given simplicial complex. This is a modified version of the code found at (https://github.com/wangjiayuan007/graph_recon_DM).
 
 #### Python Function
 
-dmpcd.compute_persistence_swr
+dmpcd.compute_persistence_baseline
 
 #### Input
-- input_filename - path to sparse weighted Rips filtration file
+- input_filename - path to complex file (.bin)
 - output_dir - directory where persistence results will be written to
 
 #### Output:
 
 output_dir/edge_for_morse_only.txt - contains all persistence information needed to run graph reconstruction
+
+
+### Discrete Morse Graph Reconstruction Module (PCD) (./dmpcd/code/phat_morse_src/a.out)
+
+#### Description
+
+Compute discrete Morse graph reconstruction of PCD.
+
+#### Python Function
+
+dmpcd.compute_graph_reconstruction
+
+#### Input
+- weights_filename - a sorted list of weights.
+- input_edge_filename - persistence information for each edge in domain
+- persistence_threshold - threshold used by the algorithm to simplify output
+- output_dir - directory where file containing edges that are part of graph is written to.
+
+#### Output:
+
+output_dir/dimo_edge.txt - DM graph edges
+
+### Discrete Morse Graph Reconstruction Module (Baseline) (./dmpcd/code/baseline_morse_src/a.out)
+
+#### Description
+
+Compute discrete Morse graph reconstruction of PCD.
+
+#### Python Function
+
+dmpcd.compute_graph_reconstruction_baseline
+
+#### Input
+- density_filename - a list of densities for each point in the dataset
+- input_edge_filename - persistence information for each edge in domain
+- persistence_threshold - threshold used by the algorithm to simplify output
+- output_dir - directory where file containing edges that are part of graph is written to.
+
+#### Output:
+
+output_dir/dimo_edge.txt - DM graph edges
 
 
 ## Example Use of Pipeline
@@ -420,6 +584,8 @@ output_dir/edge_for_morse_only.txt - contains all persistence information needed
 
 ### Baseline
 
+    >import dmpcd as dm
+    
     >input_filename = "data/1-circle/features.txt"
     >output_dir = "results/1-circle-baseline/"
     >k = 15
