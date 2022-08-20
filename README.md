@@ -293,6 +293,59 @@ image of morse graph on top of 2D embedding of the dataset
     >dm.reorder_verts_by_weight(weights_filename, input_filename, sorted_feature_filename)
     
     >dm.visualize_results_2d(sorted_feature_filename, result_edge_filename)
+    
+### dmpcd.density_estimation(input_filename, output_filename, k=15)
+
+#### Description
+Guassian kernel density estimation for each point in domain
+
+#### Input
+- input_filename - verts in PCD
+- output_filename - file containing density estimation fo each point in PCD
+- k - density factors in k-nearest neighbors
+
+#### Output
+
+a file containing the density estimation of each point in PCD
+
+#### Example
+
+    >import dmpcd as dm
+    
+    >input_filename = "data/1-circle/features.txt"
+    >output_dir = "results/1-circle-baseline/"
+    >k = 15
+    
+    >density_filename = os.path.join(output_dir, 'density.txt', k)
+    >dm.density_estimation(input_filename, density_filename)
+
+### compute_rips_complex_edges(input_filename, output_filename, thresh, metric='euclidean')
+
+#### Description
+compute edges in Rips complex for given threshold
+
+#### Input
+- input_filename - verts in PCD
+- output_filename - file containing edges in RIPS complex
+- thresh - Radius parameter for Rips complex
+- metric - metric used to compute Rips complex
+
+#### Output
+
+a file containing the edges in Rips complex
+
+#### Example
+
+    >import dmpcd as dm
+    
+    >input_filename = "data/1-circle/features.txt"
+    >output_dir = "results/1-circle-baseline/"
+    >rips_alpha = .25
+    
+    >rips_edge_filename = os.path.join(output_dir, 'rips-edge.txt')
+    >dm.compute_rips_complex_edges(input_filename, rips_edge_filename, rips_alpha, metric='euclidean')
+    
+
 
 ## Separate Programs
 
