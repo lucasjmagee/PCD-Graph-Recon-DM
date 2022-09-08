@@ -43,7 +43,7 @@ Discrete Morse Graph Reconstruction (Baseline)
 
 ## dmpcd Functions
 
-### dmpcd.build_sparse_weighted_rips_filtration(feature_filename, output_dir, k=15, metric='euclidean', epsilon=.99, cutoff=inf)
+### dmpcd.pcd.build_sparse_weighted_rips_filtration(feature_filename, output_dir, k=15, metric='euclidean', epsilon=.99, cutoff=inf)
 
 #### Description
 Divide the input domain into overlapping sub-rectangular prisms.
@@ -72,7 +72,7 @@ Output dir is made containing a file with the filtration that will be passed Spa
     >cutoff=inf
     >dm.build_sparse_weighted_rips_filtration(feature_filename, output_dir, k, metric, epsilon, cutoff)
     
-### dmpcd.compute_persistence_swr(input_filename, output_dir)
+### dmpcd.pcd.compute_persistence_swr(input_filename, output_dir)
 
 #### Description
 Compute persistence of sparse weighted Rips filtrations
@@ -98,7 +98,7 @@ File containing persistence values and dimension of each edge in input filtratio
     >dm.build_sparse_weighted_rips_filtration(feature_filename, output_dir, k, metric, epsilon, cutoff)
     >dm.compute_persistence_swr(os.path.join(output_dir, "sparse_weighted_rips_filtration.txt"), output_dir)
 
-### dmpcd.reorder_weights(input_filename, output_filename)
+### dmpcd.pcd.reorder_weights(input_filename, output_filename)
 
 #### Description
 order weights in ascending order - this is needed for input into PCD graph reconstruction.
@@ -126,7 +126,7 @@ File containing persistence values and dimension of each edge in input filtratio
     >sorted_weights_filename = os.path.join(output_dir, "sorted-weights.txt")
     >dm.reorder_weights(weights_filename, sorted_weights_filename)
     
-### dmpcd.compute_graph_reconstruction(sorted_weights_filename, edge_persistence_filename, persistence_threshold, output_dir)
+### dmpcd.pcd.compute_graph_reconstruction(sorted_weights_filename, edge_persistence_filename, persistence_threshold, output_dir)
 
 #### Description
 Compute DM graph reconstruction
@@ -165,7 +165,7 @@ Graph reconstruction of PCD
     >morse_dir = os.path.join(output_dir, str(persistence_threshold) + '/')
     >dm.compute_graph_reconstruction(sorted_weights_filename, edge_filename, persistence_threshold, morse_dir)
 
-### dmpcd.reorder_verts_by_weight(weights_filename, verts_filename, output_filename)
+### dmpcd.pcd.reorder_verts_by_weight(weights_filename, verts_filename, output_filename)
 
 #### Description
 reorder original data by weights computed in dmpcd.build_sparse_weighted_rips_filtration
@@ -207,7 +207,7 @@ reordered PCD dataset based on weight values
     >sorted_feature_filename = os.path.join(output_dir, 'sorted-feature.txt')
     >dm.reorder_verts_by_weight(weights_filename, input_filename, sorted_feature_filename)
     
-### dmpcd.reorder_verts_and_annos_by_weight(weights_filename, verts_filename, anno_filename, output_vert_filename, output_anno_filename)
+### dmpcd.pcd.reorder_verts_and_annos_by_weight(weights_filename, verts_filename, anno_filename, output_vert_filename, output_anno_filename)
 
 #### Description
 reorder original data (and annotations) by weights computed in dmpcd.build_sparse_weighted_rips_filtration
@@ -296,7 +296,7 @@ image of morse graph on top of 2D embedding of the dataset
     
     >dm.visualize_results_2d(sorted_feature_filename, result_edge_filename)
     
-### dmpcd.density_estimation(input_filename, output_filename, k=15)
+### dmpcd.baseline.density_estimation(input_filename, output_filename, k=15)
 
 #### Description
 Guassian kernel density estimation for each point in domain
@@ -321,7 +321,7 @@ a file containing the density estimation of each point in PCD
     >density_filename = os.path.join(output_dir, 'density.txt', k)
     >dm.density_estimation(input_filename, density_filename)
 
-### dmpcd.compute_rips_complex_edges(input_filename, output_filename, thresh, metric='euclidean')
+### dmpcd.baseline.compute_rips_complex_edges(input_filename, output_filename, thresh, metric='euclidean')
 
 #### Description
 compute edges in Rips complex for given threshold
@@ -347,7 +347,7 @@ a file containing the edges in Rips complex
     >rips_edge_filename = os.path.join(output_dir, 'rips-edge.txt')
     >dm.compute_rips_complex_edges(input_filename, rips_edge_filename, rips_alpha, metric='euclidean')
 
-### dmpcd.build_baseline_complex(rips_edge_filename, density_filename, output_filename, threshold=inf):
+### dmpcd.baseline.build_baseline_complex(rips_edge_filename, density_filename, output_filename, threshold=inf):
 
 #### Description
 build Rips complex with density values (.bin)
@@ -385,7 +385,7 @@ a file containing the edges in Rips complex
     >dm.build_baseline_complex(rips_edge_filename, density_filename, complex_filename)
 
 
-### dmpcd.compute_persistence_baseline(input_filename, output_dir)
+### dmpcd.baseline.compute_persistence_baseline(input_filename, output_dir)
 
 #### Description
 build Rips complex with density values (.bin)
@@ -424,7 +424,7 @@ a file containing the persistence ifno of the edges in domain
     >edge_persistence_filename = os.path.join(output_dir, 'edge_for_morse_only.txt')
     
 
-### dmpcd.compute_graph_reconstruction_baseline(density_filename, edge_persistence_filename, persistence_threshold, output_dir)
+### dmpcd.baseline.compute_graph_reconstruction_baseline(density_filename, edge_persistence_filename, persistence_threshold, output_dir)
 
 #### Description
 compute DM graph reconstruction
