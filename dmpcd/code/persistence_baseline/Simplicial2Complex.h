@@ -334,7 +334,7 @@ void Simplicial2Complex::build_spt3(float sigma, string efile){
         if(pp->persistence>sigma){
             //add to critical edges
             ve_e_gt_sigma.push_back(pp->saddle);
-	cout << pp->persistence << " type " << 0 << endl;
+	//cout << pp->persistence << " type " << 0 << endl;
 
         }
         else{
@@ -359,7 +359,7 @@ void Simplicial2Complex::build_spt3(float sigma, string efile){
     et_e_gt_sigma.clear();
     for(auto pp = P.smBegin(); pp != P.smEnd(); ++pp){
 	    if(pp->persistence>sigma) {
-		cout << pp->persistence << " type " << 1 << endl;
+		//cout << pp->persistence << " type " << 1 << endl;
 //		cout << pp->persistence << endl;
                 et_e_gt_sigma.push_back(pp->saddle);
             }
@@ -1216,16 +1216,16 @@ void Simplicial2Complex::buildComplexFromFile2_BIN(string pathname) {
 	for (int i = 0; i < numOfVertices; i++) {
 		double coords[MAX_DIM];
 		double funcValue;
-		cout << "DIM CHECK" << DIM << endl;
+		//cout << "DIM CHECK" << DIM << endl;
 		for (int j = 0; j < DIM; j++) {
 			file.read(double_buffer, sizeof(double));
 			coords[j] = *double_reader;
-			cout << j << ": " << coords[j] << endl;
+			//cout << j << ": " << coords[j] << endl;
 		}
 		//return;
 		file.read(double_buffer, sizeof(double));
 		funcValue = *double_reader;
-		cout << "func: " << funcValue << endl;
+		//cout << "func: " << funcValue << endl;
 		// funcValue = (int)(funcValue*1e5)/1.0e5;
 		/*
 		if (coords[4019] != 0)
