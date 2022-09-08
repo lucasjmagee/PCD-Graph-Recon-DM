@@ -9,6 +9,8 @@ dmpcd is a python package meant for executing the discrete Morse graph reconstru
 * [dmpcd Functions](#dmpcd-functions)
 * [Separate Programs](#separate-programs)
 * [Example Use of Pipeline](#example-use-of-pipeline) 
+  * [PCD](#pcd)
+  * [Baseline](#baseline)
 
 ## Installation Instructions
 ### System Requirements
